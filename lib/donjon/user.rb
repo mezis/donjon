@@ -1,20 +1,22 @@
 require 'yaml'
+require 'core_ext/assert'
 
 module Donjon
   class User
-    attr_reader :name, :pubkey, :privkey, :repo
+    attr_reader :name, :key, :key, :repo
 
-    def initialize(name:, pubkey:, repo:, privkey: nil)
-      @name    = name
-      @pubkey  = pubkey
-      @repo    = repo
-      @privkey = privkey
-      # TODO: assert key is 2048 bits
+    def initialize(name:, key:, repo:)
+      assert(key.n.num_bits == 2048)
+      
+      @name  = name
+      @key   = key
+      @repo  = repo
     end
 
     def save
       data = _load(@repo)
-      data[name] = @pubkey.to_pem
+      data[name] = @key.to_pem
+      # data[name] = @key.public_key.to_pem
       _save(data, @repo)
       self
     end
@@ -44,13 +46,13 @@ module Donjon
         data = _load(repo)
         return unless data[name]
         key = OpenSSL::PKey::RSA.new(data[name])
-        new(name: name, pubkey: key, repo: repo)
+        new(name: name, key: key, repo: repo)
       end
 
       def each(repo, &block)
         _load(repo).each_pair do |name, pem|
           key = OpenSSL::PKey::RSA.new(pem)
-          block.call new(name: name, pubkey: key, repo: repo)
+          block.call new(name: name, key: key, repo: repo)
         end
       end
     end

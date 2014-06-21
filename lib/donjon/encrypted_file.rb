@@ -36,9 +36,9 @@ module Donjon
       # puts "encrypted key is #{encrypted_key.size} bytes"
       # puts "encrypted key: #{Digest::MD5.hexdigest encrypted_key}"
       # puts "decrypt with pubkey #{user.name}"
-      half_decrypted_pw = user.pubkey.public_decrypt(encrypted_key, OpenSSL::PKey::RSA::NO_PADDING)
+      half_decrypted_pw = user.key.public_decrypt(encrypted_key, OpenSSL::PKey::RSA::NO_PADDING)
       # puts "decrypt with privkey #{@actor.name}"
-      decrypted_pw = @actor.privkey.private_decrypt(half_decrypted_pw)
+      decrypted_pw = @actor.key.private_decrypt(half_decrypted_pw)
 
       Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
     end
@@ -48,9 +48,9 @@ module Donjon
       encrypted_data = Gibberish::AES.new(password).encrypt(data, binary: true)
       
       # puts "encrypt with pubkey #{user.name}"
-      half_encrypted_key = user.pubkey.public_encrypt(password)
+      half_encrypted_key = user.key.public_encrypt(password)
       # puts "encrypt with privkey #{@actor.name}"
-      encrypted_key = @actor.privkey.private_encrypt(half_encrypted_key, OpenSSL::PKey::RSA::NO_PADDING)
+      encrypted_key = @actor.key.private_encrypt(half_encrypted_key, OpenSSL::PKey::RSA::NO_PADDING)
       # puts "encrypted key: #{Digest::MD5.hexdigest encrypted_key}"
       assert(encrypted_key.size == 256)
       encrypted_key + encrypted_data
