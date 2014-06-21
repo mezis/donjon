@@ -40,12 +40,12 @@ module Donjon
       # puts "decrypt with privkey #{@actor.name}"
       decrypted_pw = @actor.privkey.private_decrypt(half_decrypted_pw)
 
-      Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data)
+      Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
     end
 
     def _encrypt_for(user, data)
       password = OpenSSL::Random.random_bytes(16)
-      encrypted_data = Gibberish::AES.new(password).encrypt(data)
+      encrypted_data = Gibberish::AES.new(password).encrypt(data, binary: true)
       
       # puts "encrypt with pubkey #{user.name}"
       half_encrypted_key = user.pubkey.public_encrypt(password)
