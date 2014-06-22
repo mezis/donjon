@@ -15,8 +15,7 @@ module Donjon
 
     def save
       data = _load(@repo)
-      data[name] = @key.to_pem
-      # data[name] = @key.public_key.to_pem
+      data[name] = @key.public_key.to_pem
       _save(data, @repo)
       self
     end
