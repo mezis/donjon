@@ -2,11 +2,7 @@ require 'spec_helper'
 require 'donjon/user'
 require 'donjon/repository'
 require 'spec/support/repos'
-
-def random_key
-  OpenSSL::PKey::RSA.new(2048)
-end
-
+require 'spec/support/keys'
 
 describe Donjon::User do
   let_repo(:repo)

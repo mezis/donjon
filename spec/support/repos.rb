@@ -6,7 +6,7 @@ require 'donjon/repository'
 
 def let_repo(name)
   let(name) do
-    id = OpenSSL::Random.random_bytes(4).unpack('L').first.to_s(16)
+    id = "%08x" % rand(1<<32)
     Donjon::Repository.new("tmp/repo-#{id}")
   end
 
@@ -17,9 +17,6 @@ def let_repo(name)
   end
 end
 
-# def random_key
-#   OpenSSL::PKey::RSA.new(2048)
-# end
 
 
 
