@@ -1,12 +1,7 @@
 require 'spec_helper'
 require 'donjon/user'
 require 'donjon/repository'
-# require 'spec/support/repos'
-
-def random_repo
-  id = OpenSSL::Random.random_bytes(4).unpack('L').first.to_s(16)
-  Donjon::Repository.new("tmp/repo-#{id}")
-end
+require 'spec/support/repos'
 
 def random_key
   OpenSSL::PKey::RSA.new(2048)
@@ -14,8 +9,7 @@ end
 
 
 describe Donjon::User do
-  let(:repo) { random_repo }
-  after { repo.rmtree if repo.exist? }
+  let_repo(:repo)
 
   let(:options) {{
     name:    'john-doe',
@@ -51,15 +45,56 @@ describe Donjon::User do
 
   describe '.find' do
     context 'with no users' do
-      it 'returns nil'
+      it 'returns nil' do
+        expect(
+          described_class.find(name: 'bob', repo: repo)
+        ).to be_nil
+      end
     end
 
     context 'with users' do
-      it 'returns nil for unknown users'
-      it 'returns known users'
+      let(:bob_key) { random_key }
+
+      before do
+        Donjon::User.new(name: 'alice', key: random_key, repo: repo).save
+        Donjon::User.new(name: 'bob',   key: bob_key,    repo: repo).save
+      end
+
+      it 'returns nil for unknown users' do
+        expect(
+          described_class.find(name: 'charlie', repo: repo)
+        ).to be_nil
+      end
+
+      it 'returns known users' do
+        bob = described_class.find(name: 'bob', repo: repo)
+        expect(bob.name).to eq('bob')
+        expect(bob.key.to_pem).to  eq(bob_key.public_key.to_pem)
+      end
     end
   end
 
-  describe '.each'
+  describe '.each' do
+    context 'with no users' do
+      it 'returns nil' do
+        expect { |b|
+          described_class.each(repo, &b)
+        }.not_to yield_control
+      end
+    end
+
+    context 'with users' do
+      before do
+        Donjon::User.new(name: 'alice', key: random_key, repo: repo).save
+        Donjon::User.new(name: 'bob',   key: random_key, repo: repo).save
+      end
+
+      it 'returns known users' do
+        expect { |b|
+          described_class.each(repo, &b)
+        }.to yield_successive_args(Donjon::User, Donjon::User)
+      end
+    end
+  end
 
 end
