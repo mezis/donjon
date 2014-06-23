@@ -10,14 +10,24 @@ module Donjon
       @actor = actor
     end
 
+    def exist?
+      _base_path.exist?
+    end
+
     def read
       path = _path_for(@actor)
-      path.exist? or raise 'not readable by you, or does not exist'
+      exist? or raise 'file does not exist'
+      path.exist? or raise 'you were not granted access'
       data = path.binread
       _decrypt_from(_last_writer, data)
     end
 
     def write(data)
+      if data.nil?
+        _base_path.rmtree if exist?
+        return
+      end
+
       User.each(@actor.repo) do |user|
         payload = _encrypt_for(user, data)
         path = _path_for(user)
@@ -33,35 +43,40 @@ module Donjon
       encrypted_key  = data[0...256]
       encrypted_data = data[256..-1]
 
-      # puts "encrypted key is #{encrypted_key.size} bytes"
-      # puts "encrypted key: #{Digest::MD5.hexdigest encrypted_key}"
-      # puts "decrypt with pubkey #{user.name}"
-      half_decrypted_pw = user.key.public_decrypt(encrypted_key, OpenSSL::PKey::RSA::NO_PADDING)
-      # puts "decrypt with privkey #{@actor.name}"
-      decrypted_pw = @actor.key.private_decrypt(half_decrypted_pw)
+      # _log_key "before decrypt", encrypted_key
+      decrypted_pw = @actor.key.private_decrypt(encrypted_key)
+      # _log_key "decrypted", decrypted_pw
 
       Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
     end
 
     def _encrypt_for(user, data)
-      password = OpenSSL::Random.random_bytes(16)
+      password = OpenSSL::Random.random_bytes(32)
       encrypted_data = Gibberish::AES.new(password).encrypt(data, binary: true)
       
-      # puts "encrypt with pubkey #{user.name}"
-      half_encrypted_key = user.key.public_encrypt(password)
-      # puts "encrypt with privkey #{@actor.name}"
-      encrypted_key = @actor.key.private_encrypt(half_encrypted_key, OpenSSL::PKey::RSA::NO_PADDING)
-      # puts "encrypted key: #{Digest::MD5.hexdigest encrypted_key}"
+      # _log_key "before crypto", password
+      encrypted_key = user.key.public_encrypt(password)
+      # _log_key "encrypted", encrypted_key
+
       assert(encrypted_key.size == 256)
       encrypted_key + encrypted_data
     end
 
+    def _log_key(message, key)
+      puts "#{message}: #{key.bytesize} bytes"
+      puts key.bytes.map { |b| "%02x" % b }.join(":")
+    end
+
+    def _base_path
+      @actor.repo.join(@path)
+    end
+
     def _path_for(user)
-      user.repo.join(@path).join("#{user.name}.db")
+      _base_path.join("#{user.name}.db")
     end
 
     def _last_writer_path
-      @actor.repo.join(@path).join('last_writer')
+      _base_path.join('last_writer')
     end
 
     def _last_writer
