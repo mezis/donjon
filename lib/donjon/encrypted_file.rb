@@ -47,6 +47,7 @@ module Donjon
       decrypted_pw = @actor.key.private_decrypt(encrypted_key)
       # _log_key "decrypted", decrypted_pw
 
+      assert(decrypted_pw.size == 32)
       Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
     end
 
