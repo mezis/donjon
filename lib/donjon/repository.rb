@@ -7,11 +7,5 @@ module Donjon
     def initialize(path)
       @path = path
     end
-
-    def pull
-    end
-
-    def push
-    end
   end
 end
