@@ -3,7 +3,7 @@ require 'core_ext/assert'
 
 module Donjon
   class User
-    attr_reader :name, :key, :key, :repo
+    attr_reader :name, :key, :repo
 
     def initialize(name:, key:, repo:)
       assert(key.n.num_bits == 2048)
@@ -14,27 +14,22 @@ module Donjon
     end
 
     def save
-      data = _load(@repo)
-      data[name] = @key.public_key.to_pem
-      _save(data, @repo)
+      _path_for(@name, @repo).tap do |path|
+        path.parent.mkpath
+        path.write @key.public_key.to_pem
+      end
       self
     end
+
+    private
 
     module SharedMethods
       private 
 
-      def _load(repo)
-        path = _path(repo)
-        data = path.exist? ? YAML.load_file(path) : {}
-      end
 
-      def _save(data, repo)
-        _path(repo).parent.mkpath
-        _path(repo).write(data.to_yaml)
-      end
 
-      def _path(repo)
-        repo.join('users.yml')
+      def _path_for(name, repo)
+        repo.join("users/#{name}.pub")
       end
     end
     extend SharedMethods
@@ -42,15 +37,17 @@ module Donjon
 
     module ClassMethods
       def find(name:, repo:)
-        data = _load(repo)
-        return unless data[name]
-        key = OpenSSL::PKey::RSA.new(data[name])
+        path = _path_for(name, repo)
+        return unless path.exist?
+        key = OpenSSL::PKey::RSA.new(path.read)
         new(name: name, key: key, repo: repo)
       end
 
       def each(repo, &block)
-        _load(repo).each_pair do |name, pem|
-          key = OpenSSL::PKey::RSA.new(pem)
+        repo.join('users').children.each do |child|
+          next unless child.extname == '.pub'
+          name = child.basename.to_s.chomp('.pub')
+          key = OpenSSL::PKey::RSA.new(child.read)
           block.call new(name: name, key: key, repo: repo)
         end
       end

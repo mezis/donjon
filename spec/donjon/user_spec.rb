@@ -26,14 +26,14 @@ describe Donjon::User do
       expect { subject.save }.not_to raise_error
     end
 
-    it 'creates users.yml' do
+    it 'creates public key file' do
       subject.save
-      expect( repo.join('users.yml') ).to be_exist
+      expect( repo.join('users/john-doe.pub') ).to be_exist
     end
 
     it 'does not save the private key' do
       subject.save
-      data = repo.join('users.yml').read
+      data = repo.join('users/john-doe.pub').read
       expect(data).to match(/PUBLIC KEY/)
       expect(data).not_to match(/PRIVATE KEY/)
     end
