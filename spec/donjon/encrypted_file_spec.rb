@@ -53,10 +53,6 @@ describe Donjon::EncryptedFile do
         2.times { subject.write 'foo' }
       }.not_to raise_error
     end
-
-    # it 'creates a file for the actor'
-    # it 'creates a file for other users'
-    # it 'encrypts the file' do
   end
 
   describe '#read' do
