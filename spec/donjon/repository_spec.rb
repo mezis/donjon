@@ -15,9 +15,9 @@ describe Donjon::Repository do
     end
   end
 
-  describe '#path' do
+  describe '#to_s' do
     it 'returns the path' do
-      expect(subject.path).to eq(options.first)
+      expect(subject.to_s).to eq(options.first)
     end
   end
 end
