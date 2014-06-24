@@ -1,27 +1,29 @@
+require 'donjon/encrypted_file'
+
 module Donjon
   class Database
-    def initialize(path:, reader:)
+    def initialize(actor:)
+      @actor = actor
     end
 
-    def get(key)
-      _data[key]
+    def [](key)
+      _file(key).tap do |f|
+        return f.exist? ? f.read : nil
+      end
     end
 
-    def set(key, value)
-      _data[key] = value
-    end
-
-    def save
-      # yaml = @data.to_yaml
+    def []=(key, value)
+      _file(key).write(value)
     end
 
     private
 
-    def _data
-      @_data ||= begin
-        raw = EncryptedFile.new(path: @path, reader: @reader).read
-        YAML.load(raw)
-      end
+    def _hash(key)
+      OpenSSL::Digest::SHA256.hexdigest(key)
+    end
+
+    def _file(key)
+      EncryptedFile.new(path: "data/#{_hash(key)}", actor: @actor)
     end
   end
 end
