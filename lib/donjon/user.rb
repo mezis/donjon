@@ -44,7 +44,9 @@ module Donjon
       end
 
       def each(repo, &block)
-        repo.join('users').children.each do |child|
+        container = repo.join('users')
+        return unless container.exist?
+        container.children.each do |child|
           next unless child.extname == '.pub'
           name = child.basename.to_s.chomp('.pub')
           key = OpenSSL::PKey::RSA.new(child.read)
