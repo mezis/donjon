@@ -26,8 +26,6 @@ module Donjon
     module SharedMethods
       private 
 
-
-
       def _path_for(name, repo)
         repo.join("users/#{name}.pub")
       end

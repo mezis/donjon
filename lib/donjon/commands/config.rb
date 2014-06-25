@@ -3,13 +3,13 @@ require 'donjon/commands/base'
 module Donjon
   module Commands
     Base.class_eval do
-      desc 'config:set KEY=VALUE ...', 'encrypts KEY and VALUE in the repo'
+      desc 'config:set KEY=VALUE ...', 'Encrypts KEY and VALUE in the vault'
       decl 'config:set'
 
-      desc 'config:get KEY...', 'decrypts the value for KEY from the repo'
+      desc 'config:get KEY...', 'Decrypts the value for KEY from the vault'
       decl 'config:get'
       
-      desc 'config:mget [REGEXP]', 'decrypts multiple keys (default all readable)'
+      desc 'config:mget [REGEXP]', 'Decrypts multiple keys (all readable by default)'
       decl 'config:mget'
       
       private

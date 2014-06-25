@@ -9,12 +9,9 @@ require 'donjon/shell'
 module Donjon
   module Commands
     Base.class_eval do
-      desc "vault:init", 'create a new vault'
-      decl 'vault:init'
+      desc "init", 'Creates a new vault, or connects to an existing vault.'
       
-      private
-
-      def vault_init
+      def init
         if settings.configured?
           say 'This vault is already configured :)', :green
           say 'If you want another one, set DONJONRC to a new configuration file'
