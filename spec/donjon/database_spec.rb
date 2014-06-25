@@ -11,6 +11,10 @@ describe Donjon::Database do
     Donjon::User.new(name: 'alice', key: random_key, repo: repo).save
   }
 
+  let(:other_user) {
+    Donjon::User.new(name: 'bob', key: random_key, repo: repo).save
+  }
+
   let(:options) {{
     actor: actor
   }}
@@ -50,5 +54,23 @@ describe Donjon::Database do
       subject['foo3'] = 'bar3'
       expect( subject['foo3'] ).to eq('bar3')
     end
+
+    it 'returns nil when the key is not readable' do
+      subject['foo4'] = 'bar4'
+      other_db = described_class.new(actor: other_user)
+      expect(other_db['foo4']).to be_nil
+    end
+  end
+
+  describe '#update' do
+    it 'makes keys reable for other users' do
+      subject['foo'] = 'bar'
+      other_db = described_class.new(actor: other_user)
+      subject.update
+      expect(other_db['foo']).to eq('bar')
+    end
+  end
+
+  describe '#each' do
   end
 end

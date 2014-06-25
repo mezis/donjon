@@ -1,4 +1,5 @@
 require 'donjon/encrypted_file'
+require 'json'
 
 module Donjon
   class Database
@@ -7,16 +8,46 @@ module Donjon
     end
 
     def [](key)
-      _file(key).tap do |f|
-        return f.exist? ? f.read : nil
-      end
+      file = _file(key)
+      return unless file.readable? 
+      _key, value = _unpack(file.read)
+      assert(key == _key, "bad stored data for #{key}!")
+      return value
     end
 
     def []=(key, value)
-      _file(key).write(value)
+      _file(key).write(_pack(key, value))
     end
 
+    def each
+      parent = @actor.repo.join('data')
+      return unless parent.exist?
+      parent.children.each do |child|
+        path = "data/#{child.basename}"
+        file = EncryptedFile.new(path: path, actor: @actor)
+        next unless file.readable?
+        yield *_unpack(file.read)
+      end
+    end
+
+    def update
+      each do |key, value|
+        puts "updating #{key}"
+        self[key] = value
+      end
+      nil
+    end
+
+
     private
+
+    def _pack(key, value)
+      JSON.dump([key, value])
+    end
+
+    def _unpack(data)
+      JSON.parse(data)
+    end
 
     def _hash(key)
       OpenSSL::Digest::SHA256.hexdigest(key)

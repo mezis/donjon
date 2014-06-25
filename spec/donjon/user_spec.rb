@@ -37,6 +37,8 @@ describe Donjon::User do
       expect(data).to match(/PUBLIC KEY/)
       expect(data).not_to match(/PRIVATE KEY/)
     end
+
+    xit 'fails if existing, different key'
   end
 
   describe '.find' do
