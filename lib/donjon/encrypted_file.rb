@@ -39,6 +39,9 @@ module Donjon
 
     private
 
+    # random bytes added to the data to encrypt to obfuscate it
+    PADDING = 256
+
     def _decrypt_from(user, data)
       encrypted_key  = data[0...256]
       encrypted_data = data[256..-1]
@@ -48,12 +51,14 @@ module Donjon
       # _log_key "decrypted", decrypted_pw
 
       assert(decrypted_pw.size == 32)
-      Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
+      payload = Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
+      payload[0...-PADDING]
     end
 
     def _encrypt_for(user, data)
+      payload = data + OpenSSL::Random.random_bytes(PADDING)
       password = OpenSSL::Random.random_bytes(32)
-      encrypted_data = Gibberish::AES.new(password).encrypt(data, binary: true)
+      encrypted_data = Gibberish::AES.new(password).encrypt(payload, binary: true)
       
       # _log_key "before crypto", password
       encrypted_key = user.key.public_encrypt(password)
