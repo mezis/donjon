@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
+require 'donjon'
+require 'donjon/cli'
 
-require 'bundler/setup'
-require 'thor'
-
+Donjon::Commands::Base.start(ARGV)
 
