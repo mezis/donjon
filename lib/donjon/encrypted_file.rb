@@ -14,6 +14,10 @@ module Donjon
       _base_path.exist?
     end
 
+    def readable?
+      _path_for(@actor).exist?
+    end
+
     def read
       path = _path_for(@actor)
       exist? or raise 'file does not exist'

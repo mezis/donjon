@@ -77,6 +77,34 @@ describe Donjon::EncryptedFile do
       expect(data).to eq('hello, world!')
     end
   end
+
+  describe '#readable?' do
+    let(:other_file) {
+      described_class.new(actor: other_user, path: options[:path])
+    }
+
+    before { actor.save }
+    
+    it 'is false for non-existing files' do
+      expect(subject).not_to be_readable
+    end
+
+    it 'is true for files I wrote' do
+      subject.write 'foo'
+      expect(subject).to be_readable
+    end
+
+    it 'is false for users added after I wrote' do
+      subject.write 'foo'
+      expect(other_file).not_to be_readable
+    end
+
+    it 'is true for users added before I wrote' do
+      other_user.save
+      subject.write 'foo'
+      expect(other_file).to be_readable
+    end
+  end
 end
 
 
