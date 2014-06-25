@@ -19,7 +19,7 @@ module Donjon
       exist? or raise 'file does not exist'
       path.exist? or raise 'you were not granted access'
       data = path.binread
-      _decrypt_from(_last_writer, data)
+      _decrypt_from(@actor, data)
     end
 
     def write(data)
@@ -34,7 +34,6 @@ module Donjon
         path.parent.mkpath
         path.binwrite(payload)
       end
-      _last_writer_path.write(@actor.name)
     end
 
     private
@@ -47,7 +46,7 @@ module Donjon
       encrypted_data = data[256..-1]
 
       # _log_key "before decrypt", encrypted_key
-      decrypted_pw = @actor.key.private_decrypt(encrypted_key)
+      decrypted_pw = user.key.private_decrypt(encrypted_key)
       # _log_key "decrypted", decrypted_pw
 
       assert(decrypted_pw.size == 32)
@@ -79,15 +78,6 @@ module Donjon
 
     def _path_for(user)
       _base_path.join("#{user.name}.db")
-    end
-
-    def _last_writer_path
-      _base_path.join('last_writer')
-    end
-
-    def _last_writer
-      raise 'nothing written' unless _last_writer_path.exist?
-      User.find name: _last_writer_path.read, repo: @actor.repo
     end
   end
 end
