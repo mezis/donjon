@@ -48,7 +48,11 @@ module Donjon
         changes!
         _shell.say "Hi! How do you want to be called? [#{_default_name}]", :green
         ans = _shell.ask '>'
-        _default_name if ans.empty?
+        if ans.empty?
+          _default_name
+        else
+          ans
+        end
       end
     end
 
