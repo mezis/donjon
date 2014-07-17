@@ -32,7 +32,6 @@ module Donjon
 
     def update
       each do |key, value|
-        puts "updating #{key}"
         self[key] = value
       end
       nil
