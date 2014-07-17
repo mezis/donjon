@@ -1,7 +1,6 @@
 require 'donjon/user'
 require 'core_ext/io_get_password'
 require 'ostruct'
-require 'pry'
 
 module Donjon
   class Configurator
@@ -48,7 +47,7 @@ module Donjon
         changes!
         _shell.say "Hi! How do you want to be called? [#{_default_name}]", :green
         ans = _shell.ask '>'
-        _default_name if ans.empty?
+        ans.empty? ? _default_name : ans
       end
     end
 
