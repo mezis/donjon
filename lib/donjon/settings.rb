@@ -54,7 +54,11 @@ module Donjon
     end
 
     def _default_path
-      ENV.fetch('DONJONRC', _fallback_path)
+      if ENV.fetch('DONJONRC', nil)
+        Pathname.new(ENV.fetch('DONJONRC')).expand_path
+      else
+        _fallback_path
+      end
     end
   end
 end
