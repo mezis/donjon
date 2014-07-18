@@ -7,6 +7,9 @@ module Donjon
       desc 'user:add NAME [PATH]', 'Adds user and their public key to the vault. Reads from standard input if no path is given.'
       decl 'user:add'
 
+      desc 'user:key', 'Prints your public key'
+      decl 'user:key'
+
       private
       
       def user_add(name, path = nil)
@@ -21,7 +24,7 @@ module Donjon
             key_data << line
           end
         else
-          key_data = Pathname.new(key_path).expand_path.read
+          key_data = Pathname.new(path).expand_path.read
         end
 
         key = OpenSSL::PKey::RSA.new(key_data, '').public_key
@@ -30,6 +33,10 @@ module Donjon
         say "Making the database readable by #{name}..."
         database.update
         say "Success! #{name} has been added to the vault.", [:green, :bold]
+      end
+
+      def user_key
+        puts actor.key.public_key.to_pem 
       end
     end
   end
