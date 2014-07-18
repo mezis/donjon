@@ -59,7 +59,7 @@ module Donjon
     end
 
     def _encrypt_for(user, data)
-      payload = data + OpenSSL::Random.random_bytes(PADDING)
+      payload = data + OpenSSL::Random.random_bytes(PADDING).force_encoding("UTF-8")
       password = OpenSSL::Random.random_bytes(32)
       encrypted_data = Gibberish::AES.new(password).encrypt(payload, binary: true)
       
