@@ -42,6 +42,14 @@ module Donjon
 
     private
 
+    # encrypted file format:
+    # - 256 B           encrypted AES key
+    # - variable        payload
+    # payload format:
+    # - 32 B            encoding
+    # - variable        data
+    # - PADDING B       padding
+
     # random bytes added to the data to encrypt to obfuscate it
     PADDING = 256
 
@@ -49,23 +57,24 @@ module Donjon
       encrypted_key  = data[0...256]
       encrypted_data = data[256..-1]
 
-      # _log_key "before decrypt", encrypted_key
       decrypted_pw = user.key.private_decrypt(encrypted_key)
-      # _log_key "decrypted", decrypted_pw
 
       assert(decrypted_pw.size == 32)
       payload = Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
-      payload[0...-PADDING]
+      encoding = payload[0...32].strip
+      payload[32...-PADDING].force_encoding(encoding)
     end
 
     def _encrypt_for(user, data)
-      payload = data + OpenSSL::Random.random_bytes(PADDING)
+      encoding = data.encoding
+      data = data.force_encoding(Encoding::BINARY)
+
+      encoding_field = ("%-32s" % encoding).force_encoding(Encoding::BINARY)
+      payload = encoding_field + data + OpenSSL::Random.random_bytes(PADDING)
       password = OpenSSL::Random.random_bytes(32)
       encrypted_data = Gibberish::AES.new(password).encrypt(payload, binary: true)
       
-      # _log_key "before crypto", password
       encrypted_key = user.key.public_encrypt(password)
-      # _log_key "encrypted", encrypted_key
 
       assert(encrypted_key.size == 256)
       encrypted_key + encrypted_data

@@ -56,25 +56,32 @@ describe Donjon::EncryptedFile do
   end
 
   describe '#read' do
-    before do
-      actor.save
-      other_user.save
-
+    let(:cleartext) { 'hello, world!' }
+    before { actor.save ; other_user.save }
+    
+    def write
       described_class.
         new(actor: actor, path: options[:path]).
-        write('hello, world!')
+        write(cleartext)
     end
 
-
     it 'returns decrypted contents' do
+      write
       expect(subject.read).to eq('hello, world!')
     end
 
+    it 'works with non-ASCII characters' do
+      cleartext.replace 'é~øØî€€'
+      write
+      expect(subject.read).to eq('é~øØî€€')
+    end
+
     it 'works for other users' do
+      write
       data = described_class.
         new(actor: other_user, path: options[:path]).
         read
-      expect(data).to eq('hello, world!')
+      expect(data).to eq(cleartext)
     end
   end
 
