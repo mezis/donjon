@@ -1,7 +1,6 @@
 -I.
 --color
-#--format progress
---format d
+--format progress
 --order random
 #--profile 5
 
