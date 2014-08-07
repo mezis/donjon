@@ -67,7 +67,7 @@ module Donjon
 
     def _encrypt_for(user, data)
       encoding = data.encoding
-      data = data.force_encoding(Encoding::BINARY)
+      data = data.dup.force_encoding(Encoding::BINARY)
 
       encoding_field = ("%-32s" % encoding).force_encoding(Encoding::BINARY)
       payload = encoding_field + data + OpenSSL::Random.random_bytes(PADDING)
