@@ -5,6 +5,10 @@ Donjon is a secure, multi-user store for key-value pairs.
 Skip to: [Purpose](#purpose) | [Concepts](#concepts) | [Setting
 up](#installation) | [Usage](#usage)
 
+![Version](https://badge.fury.io/rb/donjon.svg)
+![Build status](https://travis-ci.org/mezis/donjon.svg?branch=master)
+
+
 ## Purpose
 
 We built Donjon to share credentials in a (small) devops team, for services where
