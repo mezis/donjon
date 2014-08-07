@@ -38,6 +38,13 @@ describe Donjon::Database do
         subject['foo'] = 'bar'
       }.not_to raise_error
     end
+
+    it 'deletes key when passed nil' do
+      subject['foo'] = 'bar'
+      subject['foo'] = nil
+      expect(subject['foo']).to be_nil
+      expect(subject.to_a).to be_empty
+    end
   end
 
   describe '#[]' do

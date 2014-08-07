@@ -53,6 +53,13 @@ describe Donjon::EncryptedFile do
         2.times { subject.write 'foo' }
       }.not_to raise_error
     end
+
+    it 'deletes when nil passed' do
+      subject.write('foo')
+      expect(subject).to exist
+      subject.write(nil)
+      expect(subject).not_to exist
+    end
   end
 
   describe '#read' do

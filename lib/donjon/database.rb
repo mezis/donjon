@@ -3,6 +3,8 @@ require 'json'
 
 module Donjon
   class Database
+    include Enumerable
+
     def initialize(actor:)
       @actor = actor
     end
@@ -16,7 +18,11 @@ module Donjon
     end
 
     def []=(key, value)
-      _file(key).write(_pack(key, value))
+      if value.nil?
+        _file(key).write(nil)
+      else
+        _file(key).write(_pack(key, value))
+      end
     end
 
     def each

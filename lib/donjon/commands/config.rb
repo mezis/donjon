@@ -12,6 +12,9 @@ module Donjon
       desc 'config:mget [REGEXP]', 'Decrypts multiple keys (all readable by default)'
       decl 'config:mget'
       
+      desc 'config:del KEY', 'Removes a key-value pair'
+      decl 'config:del'
+      
       private
       
       def config_set(*keyvals)
@@ -35,6 +38,10 @@ module Donjon
           next if regexp && regexp !~ key
           puts "#{key}: #{value}"
         end
+      end
+
+      def config_del(key)
+        database[key] = nil
       end
     end
   end
