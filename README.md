@@ -77,11 +77,15 @@ Bittorrent Sync.
 
 ### Connecting to an existing vault
 
+Create an (empty) directory where you want the vault to be synced. Tyhis can
+typically be `~/.donjon`.
+
 Download and install [Bittorrent Sync](http://www.bittorrent.com/sync/downloads).
 
 Ask a peer already using the vault you're interested in to provide you a "one
 time secret" for the shared vault directory. Add this to Bittorrent Sync, and
-wait for syncing to complete.
+wait for syncing to complete. Note that one-time keys can only be used by one
+user!
 
 Install Donjon:
 
