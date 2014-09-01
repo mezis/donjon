@@ -6,6 +6,9 @@ module Donjon
       desc 'config:set KEY=VALUE ...', 'Encrypts KEY and VALUE in the vault'
       decl 'config:set'
 
+      desc 'config:fset KEY FILE', 'Encrypts KEY and the contents of FILE in the vault'
+      decl 'config:fset'
+
       desc 'config:get KEY...', 'Decrypts the value for KEY from the vault'
       decl 'config:get'
       
@@ -24,6 +27,10 @@ module Donjon
           value = m[2]
           database[key] = value
         end
+      end
+
+      def config_fset(key, path)
+        database[key] = Pathname(path).read
       end
 
       def config_get(*keys)
