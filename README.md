@@ -173,7 +173,7 @@ You can store it in Donjon as follows:
 5. Test the code has been properly stored:
 
     ```
-    $ dj config:get mysql
+    $ dj config:get mykey
     ```
 
 
