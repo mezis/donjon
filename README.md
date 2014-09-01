@@ -157,9 +157,9 @@ You can store it in Donjon as follows:
      $ zbarimg --raw -q <file>.png | \
      tr -d '\n' | \
      qrencode -m 2 -d 1 -t ASCII | \
-     sed -e "s/ /ESC[3m ESC[0m/g;s/#/ /g" | \
+     sed -e "s/ /ESC[7m ESC[0m/g;s/#/ /g" | \
      tr 'ESC' '\033' | \
-     tee /tmp/ar
+     tee /tmp/qr
      ```
 
      (this should output the QR code on your terminal)
