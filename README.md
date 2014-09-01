@@ -3,7 +3,8 @@
 Donjon is a secure, multi-user store for key-value pairs.
 
 Skip to: [Purpose](#purpose) | [Concepts](#concepts) | [Setting
-up](#installation) | [Usage](#usage)
+up](#installation) | [Usage](#usage) | [Storing QR
+codes](#storing-qr-codes-in-donjon)
 
 ![Version](https://badge.fury.io/rb/donjon.svg)
 ![Build status](https://travis-ci.org/mezis/donjon.svg?branch=master)
@@ -122,13 +123,59 @@ vault, e.g. on Dropbox).
 ```
 Commands:
   dj config:get KEY...         # Decrypts the value for KEY from the vault
-  dj config:mget [REGEXP]      # Decrypts multiple keys (all readable by default)
   dj config:set KEY=VALUE ...  # Encrypts KEY and VALUE in the vault
+  dj config:del KEY            # Removes a key-value pair
+  dj config:fset KEY FILE      # Encrypts KEY and the contents of FILE in the vault
+  dj config:mget [REGEXP]      # Decrypts multiple keys (all readable by default)
   dj help [COMMAND]            # Describe available commands or one specific command
   dj init                      # Creates a new vault, or connects to an existing vault.
   dj user:add NAME [PATH]      # Adds user and their public key to the vault. Reads from standard input if no path is given.
   dj user:key                  # Prints your public key
 ```
+
+
+## Storing QR codes in Donjon
+
+Some service offer two factor authentication, which is a good thing.
+Unfortunately some of those are not multi-user, which means the token for two
+factor authentication also needs to be shared.
+
+This token is usually shared as a QR code for convenience, to be used with
+Google Authenticator or Authy.
+
+You can store it in Donjon as follows:
+
+1. Get the QR code from the service. A screenshot is fine.
+
+2. Install [zbar](http://zbar.sourceforge.net/) (to scan the code) and
+   [qrencode](http://fukuchi.org/works/qrencode/) (to generate a new, compact
+   code)
+
+3. Extract a new QR code:
+
+     ```
+     $ zbarimg --raw -q <file>.png | \
+     tr -d '\n' | \
+     qrencode -m 2 -d 1 -t ASCII | \
+     sed -e "s/ /ESC[3m ESC[0m/g;s/#/ /g" | \
+     tr 'ESC' '\033' | \
+     tee /tmp/ar
+     ```
+
+     (this should output the QR code on your terminal)
+
+4. Store the QR code in Donjon:
+
+    ```
+    $ dj config:fset mykey /tmp/qr
+    ```
+
+5. Test the code has been properly stored:
+
+    ```
+    $ dj config:get mysql
+    ```
+
 
 ## Contributing
 
