@@ -70,7 +70,9 @@ encrypted and be a 2048-bit RSA key.
 
 Add, then read a first key-value pair to confirm encryption is working:
 
-    $ dj config:set TEST=foobar
+    $ dj config:set TEST
+    Enter the value for 'TEST'
+    > ****
     $ dj config:get TEST
     TEST: foobar
 
