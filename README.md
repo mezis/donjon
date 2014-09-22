@@ -6,8 +6,8 @@ Skip to: [Purpose](#purpose) | [Concepts](#concepts) | [Setting
 up](#installation) | [Usage](#usage) | [Storing QR
 codes](#storing-qr-codes-in-donjon)
 
-![Version](https://badge.fury.io/rb/donjon.svg)
-![Build status](https://travis-ci.org/mezis/donjon.svg?branch=master)
+[![Version](https://badge.fury.io/rb/donjon.svg)](https://rubygems.org/gems/donjon)
+[![Build status](https://travis-ci.org/mezis/donjon.svg?branch=master)](https://travis-ci.org/mezis/donjon)
 
 
 ## Purpose
