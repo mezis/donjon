@@ -23,10 +23,16 @@ module Donjon
       def config_set(*keyvals)
         keyvals.each do |keyval|
           m = /([^=]*)=(.*)/.match(keyval)
+          if m.nil?
+            say "Misformatted key-value pair '#{keyval}'"
+            exit 1
+          end
           key = m[1]
           value = m[2]
           database[key] = value
         end
+        say "Warning: the keys and values you just set may be saved to your shell history", :red
+        say "You can clear your history by running `history -c`."
       end
 
       def config_fset(key, path)
@@ -45,6 +51,10 @@ module Donjon
           next if regexp && regexp !~ key
           puts "#{key}: #{value}"
         end
+      rescue RegexpError => e
+        say "Misformatted regular expression '#{regexp}'", :red
+        say "(#{e.message})"
+        exit 1
       end
 
       def config_del(key)
