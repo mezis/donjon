@@ -126,15 +126,16 @@ vault, e.g. on Dropbox).
 
 ```
 Commands:
-  dj config:get KEY...         # Decrypts the value for KEY from the vault
-  dj config:set KEY=VALUE ...  # Encrypts KEY and VALUE in the vault
-  dj config:del KEY            # Removes a key-value pair
-  dj config:fset KEY FILE      # Encrypts KEY and the contents of FILE in the vault
-  dj config:mget [REGEXP]      # Decrypts multiple keys (all readable by default)
-  dj help [COMMAND]            # Describe available commands or one specific command
-  dj init                      # Creates a new vault, or connects to an existing vault.
-  dj user:add NAME [PATH]      # Adds user and their public key to the vault. Reads from standard input if no path is given.
-  dj user:key                  # Prints your public key
+  dj config:get KEY...          # Decrypts the value for KEY from the vault
+  dj config:set KEY             # Reads a VALUE from standard input, encrypts KEY and VALUE in the vault
+  dj config:del KEY             # Removes a key-value pair
+  dj config:fset KEY FILE       # Encrypts KEY and the contents of FILE in the vault
+  dj config:mget [REGEXP]       # Decrypts multiple keys (all keys by default)
+  dj config:mset KEY=VALUE ...  # Encrypts KEY and VALUE in the vault
+  dj help [COMMAND]             # Describe available commands or one specific command
+  dj init                       # Creates a new vault, or connects to an existing vault.
+  dj user:add NAME [PATH]       # Adds user and their public key to the vault. Reads from standard input if no path is given.
+  dj user:key                   # Prints your public key
 ```
 
 

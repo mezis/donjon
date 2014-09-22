@@ -54,8 +54,6 @@ module Donjon
         end
       end
 
-      private
-
       def _get_password(message)
         say message, :green
         $stdout.write('> ')

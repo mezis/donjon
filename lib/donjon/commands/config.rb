@@ -3,7 +3,10 @@ require 'donjon/commands/base'
 module Donjon
   module Commands
     Base.class_eval do
-      desc 'config:set KEY=VALUE ...', 'Encrypts KEY and VALUE in the vault'
+      desc 'config:mset KEY=VALUE ...', 'Encrypts KEY and VALUE in the vault'
+      decl 'config:mset'
+
+      desc 'config:set KEY', 'Reads a VALUE from standard input, encrypts KEY and VALUE in the vault'
       decl 'config:set'
 
       desc 'config:fset KEY FILE', 'Encrypts KEY and the contents of FILE in the vault'
@@ -20,7 +23,7 @@ module Donjon
       
       private
       
-      def config_set(*keyvals)
+      def config_mset(*keyvals)
         keyvals.each do |keyval|
           m = /([^=]*)=(.*)/.match(keyval)
           if m.nil?
@@ -33,6 +36,11 @@ module Donjon
         end
         say "Warning: the keys and values you just set may be saved to your shell history", :red
         say "You can clear your history by running `history -c`."
+      end
+
+      def config_set(key)
+        value = _get_password("Please enter the value for '#{key}'")
+        database[key] = value
       end
 
       def config_fset(key, path)
