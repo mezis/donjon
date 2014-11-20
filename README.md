@@ -58,7 +58,7 @@ This section assumes the vault is synced between users using Bittorrent Sync.
 ### Creating a new vault
 
 Install Donjon:
-    
+
     $ gem install donjon
 
 Run the Donjon configuration:
@@ -106,7 +106,7 @@ Configure Donjon; when prompted for a vault path, enter the path to the relevant
 synced directory:
 
     $ dj init
-    
+
 At this point your public key has been added to the vault, but you can't access
 any data as it hasn't been encrypted for you. Obtain your public key:
 
@@ -119,6 +119,21 @@ and send it over a reasonably secure medium to your peer. They will then run
 to encrypt all key-value pairs for your user.
 
 Test that you can read a particular key, and you're all set!
+
+#### Troubleshooting: lost private key password
+
+In case you lose your private key password, you won't be able to decrypt the vault.
+
+However, you don't need to reinstall donjon from scratch, just remove your donjon preferences and the private/public keys:
+```bash
+rm ~/.donjonrc
+rm ~/.ssh/donjon*
+```
+
+Then repeat the installation procedure above from the `dj init` step onwards.
+
+**DO NOT** delete your vault, it will sync to others.
+If you really need to, stop the Bittorrent syncing beforehand.
 
 
 ## Usage
