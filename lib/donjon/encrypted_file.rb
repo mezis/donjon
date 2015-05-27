@@ -60,7 +60,7 @@ module Donjon
       decrypted_pw = user.key.private_decrypt(encrypted_key)
 
       assert(decrypted_pw.size == 32)
-      payload = Gibberish::AES.new(decrypted_pw).decrypt(encrypted_data, binary: true)
+      payload = Gibberish::AES::CBC.new(decrypted_pw).decrypt(encrypted_data, binary: true)
       encoding = payload[0...32].strip
       payload[32...-PADDING].force_encoding(encoding)
     end
@@ -72,8 +72,8 @@ module Donjon
       encoding_field = ("%-32s" % encoding).force_encoding(Encoding::BINARY)
       payload = encoding_field + data + OpenSSL::Random.random_bytes(PADDING)
       password = OpenSSL::Random.random_bytes(32)
-      encrypted_data = Gibberish::AES.new(password).encrypt(payload, binary: true)
-      
+      encrypted_data = Gibberish::AES::CBC.new(password).encrypt(payload, binary: true)
+
       encrypted_key = user.key.public_encrypt(password)
 
       assert(encrypted_key.size == 256)
