@@ -45,6 +45,9 @@ module Donjon
           password = _get_password("Please enter the password for your private key (#{settings.private_key})")
           key = OpenSSL::PKey::RSA.new(pem_data, password)
           User.new(repo: repo, name: settings.user_name, key: key)
+        rescue OpenSSL::PKey::RSAError
+          say "Sorry, something went wrong: please ensure your password is correct.", :red
+          exit 1
         end
       end
 
